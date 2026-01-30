@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Gowun+Dodum&display=swap');
+@import "tailwindcss";
+
+:root {
+  font-family: 'Baloo 2', 'Gowun Dodum', system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+  background: radial-gradient(circle at 20% 20%, #f9f5ff 0, #e0f2fe 35%, #e0f7ff 70%, #e3f9e5 100%);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Flip card helper classes */
+.card-3d {
+  perspective: 1200px;
+}
+.card-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+.card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.card-flipped .card-inner {
+  transform: rotateY(180deg);
+}
+.card-face {
+  backface-visibility: hidden;
+}
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.modal-backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.fade-slide-up {
+  animation: fadeSlideUp 0.35s ease;
+}
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.halo {
+  box-shadow: 0 15px 45px rgba(14, 165, 233, 0.3), 0 0 0 6px rgba(14, 165, 233, 0.1);
+}
+
+.glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.bounce-once {
+  animation: bounceOnce 0.6s ease;
+}
+@keyframes bounceOnce {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
