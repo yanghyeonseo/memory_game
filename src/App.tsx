@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './index.css'
-import type { Card, GridMode, Phase } from './types'
+import type { Card, LayoutPreset, MatchMode, Phase } from './types'
 import { Board } from './components/Board'
 import { HudSection } from './components/HudSection'
 import { SetupPanel } from './components/SetupPanel'
@@ -24,13 +24,28 @@ function App() {
   const [hinting, setHinting] = useState(false)
   const [popupCard, setPopupCard] = useState<Card | null>(null)
   const [showHud, setShowHud] = useState(true)
-  const [gridMode, setGridMode] = useState<GridMode>('6x6')
+  const [preset, setPreset] = useState<LayoutPreset>('hom-6x6')
 
   const currentTeam = teamOrder[currentTurnIndex]
 
+  const currentConfig = (() => {
+    switch (preset) {
+      case 'hom-6x6':
+        return { matchMode: 'homogeneous' as MatchMode, gridClass: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6', gridMinWidth: '' }
+      case 'hom-9x4':
+        return { matchMode: 'homogeneous' as MatchMode, gridClass: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-9', gridMinWidth: 'min-w-[1356px]' }
+      case 'cross-6x3':
+        return { matchMode: 'cross' as MatchMode, gridClass: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6', gridMinWidth: 'min-w-[1024px]' }
+      default:
+        return { matchMode: 'homogeneous' as MatchMode, gridClass: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6', gridMinWidth: '' }
+    }
+  })()
+
+  const { matchMode, gridClass, gridMinWidth } = currentConfig
+
   useEffect(() => {
-    setCards(makeDeck())
-  }, [])
+    setCards(makeDeck(matchMode))
+  }, [matchMode])
 
   useEffect(() => {
     if (phase !== 'playing') return
@@ -50,7 +65,10 @@ function App() {
     if (!first || !second) return
 
     setBusy(true)
-    const isMatch = first.type === second.type && first.text === second.text
+    const isMatch =
+      matchMode === 'homogeneous'
+        ? first.type === second.type && first.text === second.text
+        : first.pairKey === second.pairKey
 
     if (isMatch) {
       setCards((prev) =>
@@ -60,7 +78,7 @@ function App() {
             : c,
         ),
       )
-      const gained = first.type === 'word' ? 1 : 2
+      const gained = matchMode === 'cross' ? 1 : first.type === 'word' ? 1 : 2
       setScores((prev) => ({ ...prev, [currentTeam]: prev[currentTeam] + gained }))
 
       setTimeout(() => {
@@ -82,7 +100,7 @@ function App() {
         setBusy(false)
       }, 2000)
     }
-  }, [selectedIds, phase, currentTeam])
+  }, [selectedIds, phase, currentTeam, matchMode])
 
   const advanceTurn = () => {
     setCurrentTurnIndex((prev) => (prev + 1) % teamOrder.length)
@@ -90,7 +108,7 @@ function App() {
 
   const startGame = () => {
     setScores({ 1: 0, 2: 0, 3: 0, 4: 0 })
-    setCards(makeDeck())
+    setCards(makeDeck(matchMode))
     setSelectedIds([])
     setCurrentTurnIndex(0)
     setPhase('playing')
@@ -162,13 +180,6 @@ function App() {
   const matchedPairs = cards.filter((c) => c.matched).length / 2
   const canStart = new Set(teamOrder).size === TEAM_IDS.length
 
-  const gridClass =
-    gridMode === '6x6'
-      ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6'
-      : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9'
-
-  const gridMinWidth = gridMode === '4x9' ? 'min-w-[1356px]' : ''
-
   return (
     <div className="min-h-screen pb-12 text-slate-900">
       <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 md:px-6 pt-8">
@@ -178,8 +189,8 @@ function App() {
             onOrderChange={handleOrderChange}
             canStart={canStart}
             onStart={startGame}
-            gridMode={gridMode}
-            onGridChange={setGridMode}
+            preset={preset}
+            onPresetChange={setPreset}
           />
         ) : (
           <>
@@ -191,6 +202,7 @@ function App() {
               currentTeam={currentTeam}
               gridClass={gridClass}
               gridMinWidth={gridMinWidth}
+              matchMode={matchMode}
               onCardClick={handleCardClick}
             />
 

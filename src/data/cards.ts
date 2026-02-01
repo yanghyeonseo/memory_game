@@ -7,7 +7,7 @@ import yangjaImg from '../assets/양자.png'
 import seonghwaImg from '../assets/성화.png'
 import gyeoninImg from '../assets/견인.png'
 import yeonghwaImg from '../assets/영화.png'
-import type { Card } from '../types'
+import type { Card, MatchMode } from '../types'
 
 export const TEAM_IDS = [1, 2, 3, 4] as const
 
@@ -49,31 +49,58 @@ export const WORD_IMAGES: Record<string, string> = {
 
 export const prettyTeamName = (id: number) => `${id}조`
 
-export const makeDeck = (): Card[] => {
+export const makeDeck = (mode: MatchMode = 'homogeneous'): Card[] => {
   const cards: Card[] = []
-  WORDS.forEach((word) => {
-    for (let i = 0; i < 2; i++) {
+
+  if (mode === 'homogeneous') {
+    WORDS.forEach((word) => {
+      for (let i = 0; i < 2; i++) {
+        cards.push({
+          id: `word-${word}-${i}`,
+          type: 'word',
+          text: word,
+          matched: false,
+          isFlipped: false,
+          image: WORD_IMAGES[word],
+          pairKey: word,
+        } as Card & { pairKey: string })
+      }
+    })
+    MEANINGS.forEach((meaning, index) => {
+      for (let i = 0; i < 2; i++) {
+        const pairKey = WORDS[index]
+        cards.push({
+          id: `meaning-${index}-${i}`,
+          type: 'meaning',
+          text: meaning,
+          matched: false,
+          isFlipped: false,
+          pairKey,
+        } as Card & { pairKey: string })
+      }
+    })
+  } else {
+    // cross: 한 쌍만 존재 (단어 1 + 뜻 1) => 총 18장
+    WORDS.forEach((word, idx) => {
       cards.push({
-        id: `word-${word}-${i}`,
+        id: `word-${word}-single`,
         type: 'word',
         text: word,
         matched: false,
         isFlipped: false,
         image: WORD_IMAGES[word],
-      })
-    }
-  })
-  MEANINGS.forEach((meaning, index) => {
-    for (let i = 0; i < 2; i++) {
+        pairKey: word,
+      } as Card & { pairKey: string })
       cards.push({
-        id: `meaning-${index}-${i}`,
+        id: `meaning-${idx}-single`,
         type: 'meaning',
-        text: meaning,
+        text: MEANINGS[idx],
         matched: false,
         isFlipped: false,
-      })
-    }
-  })
+        pairKey: word,
+      } as Card & { pairKey: string })
+    })
+  }
 
   for (let i = cards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))

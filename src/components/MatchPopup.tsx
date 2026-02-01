@@ -18,13 +18,13 @@ export function MatchPopup({ card, onClose }: Props) {
                 <img
                   src={card.image}
                   alt={card.text}
-                  className="mx-auto h-28 object-contain"
+                  className="mx-auto h-32 object-contain"
                 />
               )}
-              <span className="text-2xl font-black text-cyan-800">{card.text}</span>
+              <span className="text-3xl font-extrabold text-cyan-800">{card.text}</span>
             </div>
           ) : (
-            <p className="text-lg font-bold leading-relaxed text-slate-800">
+            <p className="text-xl font-bold leading-relaxed text-slate-800 text-center break-words whitespace-pre-line">
               {card.text}
             </p>
           )}

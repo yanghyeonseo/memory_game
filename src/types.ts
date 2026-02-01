@@ -7,7 +7,9 @@ export type Card = {
   matched: boolean
   isFlipped: boolean
   image?: string
+  pairKey?: string
 }
 
 export type Phase = 'setup' | 'playing' | 'finished'
-export type GridMode = '6x6' | '4x9'
+export type MatchMode = 'homogeneous' | 'cross'
+export type LayoutPreset = 'hom-6x6' | 'hom-9x4' | 'cross-6x3'

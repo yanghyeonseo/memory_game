@@ -1,4 +1,4 @@
-import type { Card } from '../types'
+import type { Card, MatchMode } from '../types'
 import { prettyTeamName } from '../data/cards'
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   currentTeam: number
   gridClass: string
   gridMinWidth: string
+  matchMode: MatchMode
   onCardClick: (id: string) => void
 }
 
@@ -20,6 +21,7 @@ export function Board({
   currentTeam,
   gridClass,
   gridMinWidth,
+  matchMode,
   onCardClick,
 }: Props) {
   return (
@@ -74,13 +76,15 @@ export function Board({
                           <img
                             src={card.image}
                             alt={card.text}
-                            className="h-16 w-full object-contain drop-shadow-sm"
+                            className="h-24 w-full object-contain drop-shadow-sm"
                           />
                         )}
-                        <span className="text-lg font-black text-cyan-800">{card.text}</span>
+                        <span className="text-xl font-extrabold text-cyan-800">{card.text}</span>
                       </div>
                     ) : (
-                      <p className="text-sm font-bold leading-snug text-slate-800">
+                      <p
+                        className={`${matchMode === 'cross' ? 'text-lg md:text-xl' : 'text-base'} font-bold leading-relaxed text-slate-800 text-center break-words whitespace-pre-line`}
+                      >
                         {card.text}
                       </p>
                     )}

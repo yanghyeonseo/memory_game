@@ -1,4 +1,4 @@
-import type { GridMode } from '../types'
+import type { LayoutPreset } from '../types'
 import { TEAM_IDS, prettyTeamName } from '../data/cards'
 
 type Props = {
@@ -6,8 +6,8 @@ type Props = {
   onOrderChange: (position: number, teamId: number) => void
   canStart: boolean
   onStart: () => void
-  gridMode: GridMode
-  onGridChange: (mode: GridMode) => void
+  preset: LayoutPreset
+  onPresetChange: (preset: LayoutPreset) => void
 }
 
 export function SetupPanel({
@@ -15,8 +15,8 @@ export function SetupPanel({
   onOrderChange,
   canStart,
   onStart,
-  gridMode,
-  onGridChange,
+  preset,
+  onPresetChange,
 }: Props) {
   return (
     <section className="rounded-3xl bg-white/90 shadow-lg backdrop-blur-md border border-white/60 p-6 md:p-8">
@@ -60,29 +60,39 @@ export function SetupPanel({
         ))}
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+      <div className="mt-6 grid gap-4">
         <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500">배치 선택</p>
+          <p className="text-xs font-semibold text-slate-500">게임 방식 선택</p>
           <div className="mt-2 flex flex-col gap-2 text-sm font-semibold text-slate-700">
             <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-cyan-200">
               <input
                 type="radio"
-                name="grid"
-                value="6x6"
-                checked={gridMode === '6x6'}
-                onChange={() => onGridChange('6x6')}
+                name="preset"
+                value="hom-6x6"
+                checked={preset === 'hom-6x6'}
+                onChange={() => onPresetChange('hom-6x6')}
               />
-              6 x 6 (정사각형)
+              단어↔단어 / 뜻↔뜻 (6 x 6)
             </label>
             <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-cyan-200">
               <input
                 type="radio"
-                name="grid"
-                value="4x9"
-                checked={gridMode === '4x9'}
-                onChange={() => onGridChange('4x9')}
+                name="preset"
+                value="hom-9x4"
+                checked={preset === 'hom-9x4'}
+                onChange={() => onPresetChange('hom-9x4')}
               />
-              4 x 9 (가로 9칸)
+              단어↔단어 / 뜻↔뜻 (9 x 4)
+            </label>
+            <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 hover:border-cyan-200">
+              <input
+                type="radio"
+                name="preset"
+                value="cross-6x3"
+                checked={preset === 'cross-6x3'}
+                onChange={() => onPresetChange('cross-6x3')}
+              />
+              단어↔뜻 (6 x 3)
             </label>
           </div>
         </div>
