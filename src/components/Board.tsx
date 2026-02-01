@@ -31,7 +31,8 @@ export function Board({
         <span>전체 카드: 36장 · 남은 쌍 {18 - matchedPairs}</span>
       </div>
       <div className={`grid ${gridClass} gap-3 ${gridMinWidth}`}>
-        {cards.map((card) => {
+        {cards.map((card, idx) => {
+          const label = idx + 1
           const flipped = card.isFlipped || card.matched
           return (
             <button
@@ -48,11 +49,7 @@ export function Board({
                 className={`card-inner h-full w-full rounded-2xl ${flipped ? 'is-flipped' : ''}`}
               >
                 <div className="card-face absolute inset-0 flex h-full w-full flex-col justify-center rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-4 text-center shadow-sm">
-                  <div className="flex flex-1 items-center justify-center">
-                    <div className="text-xl font-black text-slate-500">?
-                    </div>
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-500">뒤집어 보세요</p>
+                  <div className="text-[60px] font-black text-cyan-700">{label}</div>
                 </div>
 
                 <div
