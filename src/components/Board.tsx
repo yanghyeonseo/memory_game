@@ -1,12 +1,8 @@
 import type { Card, MatchMode } from '../types'
-import { prettyTeamName } from '../data/cards'
-
 type Props = {
   cards: Card[]
   busy: boolean
   selectedIds: string[]
-  matchedPairs: number
-  currentTeam: number
   gridClass: string
   gridMinWidth: string
   matchMode: MatchMode
@@ -17,8 +13,6 @@ export function Board({
   cards,
   busy,
   selectedIds,
-  matchedPairs,
-  currentTeam,
   gridClass,
   gridMinWidth,
   matchMode,
@@ -26,10 +20,6 @@ export function Board({
 }: Props) {
   return (
     <section className="rounded-3xl border border-white/60 bg-white/80 p-4 shadow-lg backdrop-blur overflow-x-auto">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-slate-600">
-        <span>차례: <span className="text-cyan-700 font-black">{prettyTeamName(currentTeam)}</span></span>
-        <span>전체 카드: 36장 · 남은 쌍 {18 - matchedPairs}</span>
-      </div>
       <div className={`grid ${gridClass} gap-3 ${gridMinWidth}`}>
         {cards.map((card, idx) => {
           const label = idx + 1

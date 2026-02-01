@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import './index.css'
-import type { Card, LayoutPreset, MatchMode, Phase } from './types'
+import type { Card, LayoutPreset, MatchMode, Phase, MatchPopupPayload } from './types'
 import { Board } from './components/Board'
 import { HudSection } from './components/HudSection'
 import { SetupPanel } from './components/SetupPanel'
 import { MatchPopup } from './components/MatchPopup'
 import { FinishedModal } from './components/FinishedModal'
-import { TEAM_IDS, makeDeck } from './data/cards'
+import { TEAM_IDS, makeDeck, prettyTeamName } from './data/cards'
 
 function App() {
   const [phase, setPhase] = useState<Phase>('setup')
@@ -22,9 +22,10 @@ function App() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
   const [hinting, setHinting] = useState(false)
-  const [popupCard, setPopupCard] = useState<Card | null>(null)
+  const [popupPayload, setPopupPayload] = useState<MatchPopupPayload | null>(null)
   const [showHud, setShowHud] = useState(true)
   const [preset, setPreset] = useState<LayoutPreset>('hom-6x6')
+  const [showResults, setShowResults] = useState(true)
 
   const currentTeam = teamOrder[currentTurnIndex]
 
@@ -51,6 +52,7 @@ function App() {
     if (phase !== 'playing') return
     if (cards.length && cards.every((c) => c.matched)) {
       setPhase('finished')
+      setShowResults(true)
       setBusy(false)
       setSelectedIds([])
     }
@@ -82,9 +84,13 @@ function App() {
       setScores((prev) => ({ ...prev, [currentTeam]: prev[currentTeam] + gained }))
 
       setTimeout(() => {
-        setPopupCard(first)
-        setSelectedIds([])
-        advanceTurn()
+      if (matchMode === 'cross') {
+        setPopupPayload({ cards: [first, second], mode: matchMode })
+      } else {
+        setPopupPayload({ cards: [first], mode: matchMode })
+      }
+      setSelectedIds([])
+      advanceTurn()
       }, 450)
     } else {
       setTimeout(() => {
@@ -114,7 +120,8 @@ function App() {
     setPhase('playing')
     setBusy(false)
     setHinting(false)
-    setPopupCard(null)
+    setPopupPayload(null)
+    setShowResults(true)
   }
 
   const restartGame = () => {
@@ -194,12 +201,15 @@ function App() {
           />
         ) : (
           <>
+            <div className="inline-flex items-center justify-center self-center rounded-xl bg-white/90 border border-white/60 px-3 py-2 text-center shadow-sm">
+              <span className="text-xl md:text-2xl font-black text-cyan-700">
+                {prettyTeamName(currentTeam)} 차례
+              </span>
+            </div>
             <Board
               cards={cards}
               busy={busy}
               selectedIds={selectedIds}
-              matchedPairs={matchedPairs}
-              currentTeam={currentTeam}
               gridClass={gridClass}
               gridMinWidth={gridMinWidth}
               matchMode={matchMode}
@@ -224,22 +234,20 @@ function App() {
         )}
       </main>
 
-      {popupCard && (
+      {popupPayload && (
         <MatchPopup
-          card={popupCard}
+          payload={popupPayload}
           onClose={() => {
-            setPopupCard(null)
+            setPopupPayload(null)
             setBusy(false)
           }}
         />
       )}
 
-      {phase === 'finished' && (
+      {phase === 'finished' && showResults && (
         <FinishedModal
           results={rankedResults}
-          teamOrder={teamOrder}
-          onRestart={restartGame}
-          onBackToSetup={() => setPhase('setup')}
+          onConfirm={() => setShowResults(false)}
         />
       )}
 
